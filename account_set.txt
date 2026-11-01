@@ -1,0 +1,68 @@
+================================================================================
+ARIS - ACELL SERVICE REPAIR MONITORING SYSTEM
+DAFTAR AKUN & KREDENSIAL PENGUJIAN SISTEM (ACCOUNT SET)
+================================================================================
+
+1. AKUN INTERNAL STAF (ADMIN & TEKNISI)
+--------------------------------------------------------------------------------
+Digunakan untuk login di halaman: /login
+
+[1] Role: ADMIN (Manajer / Front Desk)
+    Nama Lengkap : Maulana Andhika
+    Email        : admin@acellservice.com
+    Password     : AcellService2026!
+    Nomor HP/WA  : +628111222333
+    UUID Akun    : a0000000-0000-0000-0000-000000000001
+    Kewenangan   : Manajemen tiket penuh, intake unit, penugasan teknisi,
+                   konfirmasi Quality Check (QC), konfirmasi serah terima unit,
+                   dan manajemen pelanggan.
+
+[2] Role: TECHNICIAN (Teknisi 1)
+    Nama Lengkap : Bagaskara
+    Email        : bagas.tech@acellservice.com
+    Password     : AcellService2026!
+    Nomor HP/WA  : +62811444555
+    UUID Akun    : b0000000-0000-0000-0000-000000000001
+    Kewenangan   : Mengambil tiket antrean bebas (self-assign), input hasil diagnosis,
+                   pembuatan estimasi biaya (quotation) & suku cadang, update
+                   status pengerjaan (FSM), dan upload dokumentasi foto.
+
+[3] Role: TECHNICIAN (Teknisi 2)
+    Nama Lengkap : Andi Wijaya
+    Email        : andi.tech@acellservice.com
+    Password     : AcellService2026!
+    Nomor HP/WA  : +62811666777
+    UUID Akun    : b0000000-0000-0000-0000-000000000002
+    Kewenangan   : Mengambil tiket antrean bebas (self-assign), input hasil diagnosis,
+                   pembuatan estimasi biaya (quotation) & suku cadang, update
+                   status pengerjaan (FSM), dan upload dokumentasi foto.
+
+
+================================================================================
+2. AKUN CONTOH PORTAL MONITORING PELANGGAN (PUBLIC PORTAL)
+--------------------------------------------------------------------------------
+Digunakan untuk akses mandiri di halaman: /customer
+
+[1] Pelanggan 1: Rahmat Hidayat
+    Nomor Tiket  : AC-2026-000001
+    No. WhatsApp : 081234567890 (atau +6281234567890)
+    Perangkat    : Samsung Galaxy S22 Ultra
+    Status Awal  : WAITING_ASSIGNMENT (Antrean bebas untuk teknisi)
+
+[2] Pelanggan 2: Siti Aminah
+    Nomor Tiket  : AC-2026-000002
+    No. WhatsApp : 085712345678 (atau +6285712345678)
+    Perangkat    : Apple iPhone 13 Pro
+    Status Awal  : INSPECTION (Ditugaskan ke Budi Santoso)
+
+[3] Pelanggan 3: Dewi Lestari
+    Nomor Tiket  : AC-2026-000003
+    No. WhatsApp : 081987654321 (atau +6281987654321)
+    Perangkat    : ASUS ROG Zephyrus G14
+    Status Awal  : IN_REPAIR (Ditugaskan ke Andi Wijaya, ada quotation & negosiasi)
+
+================================================================================
+Catatan:
+- Akun staf di atas tersimpan pada seed data Supabase (`supabase/seed.sql`).
+- Saat Supabase Auth terhubung, password dienkripsi menggunakan algoritma bcrypt.
+================================================================================

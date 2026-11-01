@@ -1,0 +1,1381 @@
+ACELL SERVICE REPAIR MONITORING SYSTEM
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+Document ID     : ACELL-PRD-001
+Version         : 1.0 (Confirmed)
+Status          : Confirmed - Ready for Implementation
+Prepared for    : Acell Service
+Product Type    : Web-based Repair Ticketing and Monitoring System
+Architecture    : Full-Stack Serverless (Netlify + Supabase)
+Date            : 31 October 2026
+Primary Locale  : Bahasa Indonesia / Asia-Jakarta / IDR
+
+======================================================================
+0. PENTING: STATUS DOKUMEN DAN CARA MEMBACANYA
+======================================================================
+
+Dokumen ini telah ditinjau dan dikonfirmasi oleh pemilik produk
+(Product Owner) dan menjadi dasar implementasi.
+Seluruh keputusan bisnis telah disepakati dan tercatat pada Bagian 18.
+
+Penanda yang digunakan:
+[DISEPAKATI]  : Sudah dipilih atau dikonfirmasi oleh pemilik produk.
+[LANJUTAN]    : Tidak termasuk MVP awal, dapat dipertimbangkan kemudian.
+
+Semua item yang sebelumnya bertanda [USULAN] dan [PERLU PUTUSAN] telah
+dikonfirmasi menjadi [DISEPAKATI]. Bagian 18 berisi daftar lengkap
+keputusan yang telah dikonfirmasi.
+
+======================================================================
+1. RINGKASAN PRODUK
+======================================================================
+
+1.1 Nama Produk
+(ARIS) Acell Service Repair Monitoring System.
+
+1.2 Deskripsi
+Aplikasi web untuk mengelola proses reparasi perangkat milik pelanggan
+Acell Service. Sistem menggunakan konsep repair ticket sebagai pusat data
+pekerjaan, mulai dari penerimaan perangkat, penugasan teknisi, pemeriksaan,
+diagnosis, estimasi biaya (apabila diberlakukan), pengerjaan, quality
+control, hingga serah terima perangkat.
+
+Sistem menyediakan tiga aktor bisnis:
+1. Admin / Manager.
+2. Teknisi.
+3. Pelanggan / Client.
+
+Admin dan teknisi menggunakan akun aplikasi. Pelanggan tidak perlu membuat
+akun konvensional. Pelanggan mengakses satu tiket menggunakan nomor tiket
+sebagai username dan nomor WhatsApp yang terdaftar sebagai kredensial kedua.
+Tidak menggunakan OTP pada MVP.
+
+1.3 Visi Produk
+Membangun sistem pengelolaan reparasi yang terstruktur, transparan, dan
+mudah digunakan untuk membantu Acell Service mengelola pekerjaan teknisi
+serta memberi pelanggan kemampuan memantau progres perangkat secara mandiri.
+
+1.4 Nilai Utama
+- Setiap pekerjaan reparasi memiliki nomor tiket unik.
+- Setiap perubahan status tercatat dalam histori.
+- Admin dapat memantau pekerjaan dan penugasan teknisi.
+- Teknisi dapat mengelola pekerjaan yang ditugaskan kepadanya.
+- Pelanggan dapat melihat perkembangan tiket tanpa harus terus-menerus
+  menghubungi admin atau teknisi.
+- Informasi internal perusahaan dipisahkan dari informasi yang ditampilkan
+  kepada pelanggan.
+
+======================================================================
+2. LATAR BELAKANG DAN MASALAH BISNIS
+======================================================================
+
+2.1 Latar Belakang
+Acell Service menyediakan layanan perbaikan perangkat, terutama smartphone dan laptop.
+Informasi pelanggan, perangkat, penugasan, diagnosis, dan progres reparasi perlu dikelola secara konsisten.
+
+2.2 Masalah yang Ingin Diselesaikan
+- Status reparasi dapat tersebar di catatan, percakapan WhatsApp, atau
+  komunikasi langsung dengan teknisi.
+- Pelanggan harus bertanya berulang kali untuk mengetahui progres.
+- Admin/manajer membutuhkan satu tampilan untuk memantau seluruh tiket.
+- Penugasan dan beban kerja teknisi perlu tercatat.
+- Riwayat diagnosis, foto, status, dan komunikasi perlu terdokumentasi.
+- Riwayat perbaikan perangkat/pelanggan perlu dapat ditelusuri.
+
+2.3 Solusi Produk
+Menyediakan sistem ticketing dengan dashboard berdasarkan aktor, workflow
+status reparasi, histori aktivitas, akses monitoring per tiket, dan database
+terpusat.
+
+======================================================================
+3. TUJUAN, SASARAN, DAN INDIKATOR KEBERHASILAN
+======================================================================
+
+3.1 Tujuan Produk
+- Mendigitalisasi pencatatan permohonan dan pekerjaan reparasi.
+- Meningkatkan transparansi progres kepada pelanggan.
+- Mempermudah admin mengatur dan memantau penugasan teknisi.
+- Menyediakan riwayat reparasi yang dapat ditelusuri.
+- Mengurangi ketergantungan pada komunikasi manual untuk pertanyaan status.
+
+3.2 Indikator Keberhasilan (KPI)
+Target angka belum ditetapkan. Nilai awal dapat dikumpulkan selama pilot.
+- Jumlah tiket reparasi yang dibuat melalui sistem.
+- Persentase tiket yang memiliki data pelanggan dan perangkat lengkap.
+- Persentase tiket dengan histori status lengkap.
+- Rata-rata waktu penyelesaian reparasi.
+- Jumlah tiket tertunda dan alasan penundaan.
+- Produktivitas teknisi (tiket diterima dan diselesaikan).
+- Frekuensi pertanyaan pelanggan mengenai status reparasi.
+- Kepuasan pelanggan setelah perangkat diserahkan.
+
+3.3 Sasaran MVP
+MVP dinilai berhasil jika admin dapat membuat dan menugaskan tiket, teknisi
+dapat menerima pekerjaan dan memperbarui progres, serta pelanggan dapat
+mengakses status dan timeline tiketnya dari perangkat/browser berbeda.
+
+======================================================================
+4. RUANG LINGKUP PRODUK
+======================================================================
+
+4.1 Termasuk MVP
+- Login akun admin dan teknisi.
+- Pengelolaan profil admin/teknisi dan permission dasar.
+- Pengelolaan data pelanggan.
+- Pengelolaan data perangkat (smartphone dan laptop).
+- Pembuatan nomor tiket otomatis dan unik.
+- Penugasan tiket kepada teknisi.
+- Penerimaan atau penolakan penugasan oleh teknisi.
+- Pemeriksaan dan diagnosis reparasi.
+- Perubahan status dengan aturan transisi.
+- Timeline dan histori status.
+- Catatan progres yang dapat dibedakan menjadi public dan internal.
+- Login pelanggan berbasis nomor tiket + nomor WhatsApp.
+- Sesi pelanggan dibatasi pada satu tiket.
+- Customer portal read-only untuk informasi tiket yang dipublikasikan.
+- Dokumentasi foto reparasi melalui private object storage.
+- Audit log untuk aktivitas penting.
+- Dashboard operasional dasar.
+- Deployment frontend dan backend di Netlify serta database/storage di
+  Supabase Free selama masih sesuai kuota dan ketentuan penyedia.
+
+4.2 Tidak Termasuk MVP
+- Aplikasi native Android/iOS.
+- Pembayaran online dan payment gateway.
+- Inventaris dan akuntansi suku cadang secara lengkap.
+- Pengajuan reparasi mandiri oleh pelanggan dari website.
+- Booking jadwal reparasi.
+- Multi-cabang dan multi-tenant.
+- Integrasi WhatsApp Business API otomatis.
+- Sistem garansi reparasi yang kompleks.
+- Prediksi durasi reparasi berbasis AI.
+- WebSocket/realtime push yang selalu terhubung.
+- Dashboard business intelligence tingkat lanjut.
+- Pengelolaan payroll/komisi teknisi.
+
+4.3 Batasan MVP
+MVP ditujukan untuk validasi alur operasional Acell Service dengan jumlah
+pengguna dan volume tiket terbatas. Paket gratis bukan jaminan uptime,
+backup, kapasitas, atau dukungan setingkat layanan produksi berbayar.
+Data pelanggan nyata hanya boleh digunakan setelah pengamanan, akses,
+backup, pemulihan, dan ketentuan privasi diuji.
+
+======================================================================
+5. AKTOR, PERSONA, DAN HAK AKSES
+======================================================================
+
+5.1 Admin / Manager
+Tujuan: mengendalikan operasional reparasi dan memantau seluruh tiket.
+
+Hak akses yang diusulkan:
+- Melihat seluruh tiket.
+- Membuat dan mengelola profil pelanggan.
+- Membuat dan mengelola data perangkat.
+- Membuat tiket dan nomor tiket.
+- Menugaskan atau mengalihkan tiket kepada teknisi.
+- Melihat penerimaan/penolakan penugasan.
+- Melihat diagnosis, estimasi, progres, dan dokumentasi.
+- Mengelola akun teknisi (sesuai permission admin).
+- Mengelola status tiket sesuai transisi atau melakukan override dengan
+  alasan yang tercatat.
+- Melihat dashboard dan laporan operasional dasar.
+- Melihat audit log.
+
+Batasan:
+- Tidak boleh menghapus permanen histori tiket atau audit log.
+- Pembatalan/koreksi dilakukan dengan status atau tindakan koreksi yang
+  tercatat, bukan menghilangkan jejak historis.
+- Tindakan sensitif (misalnya mengganti nomor pelanggan atau override status)
+  harus dicatat.
+
+Catatan role:
+[DISEPAKATI] Admin dan Manager digabung menjadi satu role `admin` pada MVP.
+Pemisahan role `manager` dengan permission berbeda dapat dilakukan kemudian.
+
+5.2 Teknisi
+Tujuan: menerima penugasan, memeriksa perangkat, melakukan reparasi, dan
+memperbarui progres.
+
+Hak akses yang diusulkan:
+- Melihat tiket yang ditugaskan kepadanya.
+- Membuat tiket reparasi baru.
+- Menerima penugasan dari admin (wajib, tidak dapat menolak).
+- Mengambil tiket dari antrean tanpa penugasan (self-assignment).
+- Memulai pemeriksaan setelah menerima penugasan.
+- Menginput diagnosis dan rekomendasi perbaikan.
+- Menginput estimasi biaya/komponen jika fitur quotation diaktifkan.
+- Mengunggah foto dokumentasi.
+- Membuat pembaruan progres untuk pelanggan.
+- Membuat catatan teknis internal.
+- Memperbarui status sesuai transisi yang diizinkan.
+- Mengajukan perangkat ke tahap quality control.
+
+Batasan:
+- Tidak dapat melihat tiket teknisi lain kecuali diberi permission khusus.
+- Tidak dapat membuat, mengubah, atau menonaktifkan akun admin.
+- Tidak dapat menghapus tiket dan histori.
+- Tidak dapat membaca catatan internal teknisi lain kecuali permission
+  diberikan.
+- Tidak dapat mengubah data pelanggan secara bebas.
+- Tidak dapat menyelesaikan tiket sebelum tahap QC dan serah terima.
+- Tidak dapat melakukan status override tanpa permission admin.
+- Tidak dapat menolak penugasan yang diberikan oleh admin.
+
+5.3 Pelanggan / Client
+Tujuan: memantau satu pekerjaan reparasi secara mandiri.
+
+Mekanisme akses [DISEPAKATI]:
+- Username: nomor tiket.
+- Kredensial kedua: nomor WhatsApp pelanggan yang terdaftar pada profil.
+- Tidak memakai OTP pada MVP.
+- Tidak membutuhkan akun/password konvensional.
+- Tidak melakukan registrasi mandiri.
+- Satu sesi hanya mengakses satu tiket.
+- Login tiket kedua pada browser/profile yang sama mengganti sesi tiket
+  sebelumnya. Browser/perangkat berbeda dapat memiliki sesi masing-masing.
+
+Hak akses:
+- Melihat detail tiket yang berhasil divalidasi.
+- Melihat merek, model, dan jenis perangkat.
+- Melihat keluhan yang ditujukan untuk pelanggan.
+- Melihat status terkini dan timeline publik.
+- Melihat diagnosis/estimasi yang ditandai untuk publikasi.
+- Melihat foto yang dipublikasikan.
+- Melihat waktu pembaruan dan estimasi selesai jika tersedia.
+- Logout atau masuk ke tiket lain dengan kredensial tiket lain.
+- Mengajukan negosiasi pada quotation dengan alasan jika estimasi dirasa tidak sesuai.
+
+Batasan:
+- Tidak dapat melihat tiket pelanggan lain.
+- Tidak dapat melihat tiket lain milik nomor telepon yang sama tanpa login
+  ulang.
+- Tidak dapat melihat catatan internal, margin, biaya internal, atau data
+  teknisi yang tidak dipublikasikan.
+- Tidak dapat mengubah status, diagnosis, atau identitas tiket.
+- Tidak dapat mengakses database secara langsung.
+
+[DISEPAKATI] Pelanggan tidak dapat menyetujui atau menolak quotation secara formal. Pelanggan dapat mengajukan negosiasi dengan alasan melalui portal. Keputusan untuk melanjutkan, menyesuaikan, atau membatalkan tiket tetap berada pada admin atau teknisi.
+
+5.4 Matriks Permission Ringkas
+
+Fitur                              Admin       Teknisi       Pelanggan
+-----------------------------------------------------------------------
+Lihat seluruh tiket                  Ya          Tidak          Tidak
+Lihat tiket yang ditugaskan          Ya          Ya             Tidak
+Lihat tiket setelah validasi         Ya          Ya             Ya
+Buat pelanggan                      Ya          Terbatas       Tidak
+Buat perangkat                      Ya          Terbatas       Tidak
+Buat tiket                          Ya          Ya             Tidak
+Assign/reassign teknisi              Ya          Tidak          Tidak
+Terima penugasan (wajib)             Tidak       Ya             Tidak
+Self-assign dari antrean             Tidak       Ya             Tidak
+Input diagnosis                      Ya          Ya             Tidak
+Ubah status                          Ya          Terbatas       Tidak
+Lihat catatan internal               Ya          Terbatas       Tidak
+Lihat update publik                  Ya          Ya             Ya
+Kelola akun teknisi                  Ya          Tidak          Tidak
+Lihat laporan operasional            Ya          Terbatas       Tidak
+Ajukan negosiasi quotation           Tidak       Tidak          Ya
+Konfirmasi QC                        Ya          Ya             Tidak
+Konfirmasi serah terima              Ya          Ya             Tidak
+Kirim update publik                  Ya          Ya             Tidak
+
+======================================================================
+6. ALUR BISNIS UTAMA (END-TO-END WORKFLOW)
+======================================================================
+
+6.1 Penerimaan Perangkat dan Pembuatan Tiket
+[DISEPAKATI] Admin menerima perangkat dan membuat tiket. Teknisi juga
+dapat membuat tiket ketika menerima perangkat secara langsung.
+1. Admin atau teknisi mencari pelanggan berdasarkan nomor telepon.
+2. Jika pelanggan belum ada, admin/teknisi membuat profil pelanggan.
+3. Admin/teknisi memilih perangkat pelanggan atau menambahkan perangkat baru.
+4. Admin/teknisi mencatat keluhan, kondisi fisik, kelengkapan, dan catatan
+   penerimaan. Foto kondisi awal dan PIN/passcode perangkat bersifat
+   opsional namun tetap dapat diisi jika diperlukan.
+5. Sistem membuat ticket number unik, misalnya AC-2026-000123.
+6. Sistem menyimpan status awal dan histori status.
+7. Admin/teknisi memberikan nomor tiket dan instruksi akses kepada pelanggan.
+
+6.2 Penugasan Teknisi
+[DISEPAKATI] Admin menugaskan teknisi secara manual. Teknisi wajib menerima
+penugasan dari admin dan tidak dapat menolak. Teknisi juga dapat mengambil
+tiket dari antrean tanpa penugasan (self-assignment).
+1. Admin memilih teknisi berdasarkan keahlian/ketersediaan, atau membuat
+   tiket tanpa penugasan (unassigned queue).
+2. Jika ditugaskan, sistem membuat record penugasan.
+3. Teknisi melihat tiket pada daftar penugasan (wajib menerima).
+4. Teknisi juga dapat melihat antrean tiket tanpa penugasan dan mengambil
+   tiket secara mandiri (self-assignment).
+
+6.3 Pemeriksaan dan Diagnosis
+1. Teknisi menerima tiket.
+2. Teknisi melakukan pemeriksaan awal.
+3. Teknisi mencatat diagnosis, tindakan yang disarankan, dan dokumentasi.
+4. Catatan diberi visibilitas `public` atau `internal`.
+5. Jika diagnosis belum memadai, teknisi dapat melanjutkan pemeriksaan.
+6. Setelah diagnosis selesai, tiket berpindah ke tahap berikutnya.
+
+6.4 Estimasi Biaya dan Negosiasi
+[DISEPAKATI] Quotation wajib menjadi bagian MVP. Tidak memerlukan
+persetujuan formal pelanggan. Pelanggan dapat mengajukan negosiasi.
+
+Alur:
+- Setelah diagnosis selesai, teknisi/admin wajib membuat estimasi biaya
+  (jasa dan komponen).
+- Quotation dipublikasikan ke portal pelanggan.
+- Pelanggan dapat melihat quotation dan mengajukan negosiasi dengan alasan
+  jika estimasi dirasa tidak sesuai.
+- Pelanggan tidak menyetujui atau menolak quotation secara formal.
+- Teknisi/admin meninjau negosiasi (jika ada) dan memutuskan: melanjutkan
+  pekerjaan, menyesuaikan estimasi, atau membatalkan tiket.
+- Perubahan estimasi harus memiliki timestamp dan pelaku.
+- Negosiasi tidak memblokir workflow; teknisi dapat melanjutkan pekerjaan
+  setelah quotation dibuat.
+
+6.5 Proses Reparasi
+1. Teknisi mulai melakukan perbaikan setelah prasyarat terpenuhi.
+2. Jika komponen tidak tersedia, status menjadi `WAITING_PARTS`.
+3. Ketika suku cadang tersedia, teknisi melanjutkan ke `IN_REPAIR`.
+4. Teknisi menambahkan update publik dan/atau catatan internal.
+5. Foto dapat diunggah sebagai lampiran tiket.
+
+6.6 Quality Control dan Serah Terima
+[DISEPAKATI] QC dan serah terima dapat dikonfirmasi oleh teknisi maupun
+admin, dengan nama pengonfirmasi tercatat dalam histori.
+1. Setelah pengerjaan, teknisi atau admin mengajukan perangkat ke
+   `QUALITY_CHECK`.
+2. Jika pengujian gagal, tiket kembali ke `IN_REPAIR`.
+3. Jika pengujian lulus, tiket menjadi `READY_FOR_PICKUP`.
+4. Pelanggan/admin menerima informasi perangkat siap diambil.
+5. Setelah perangkat diserahkan, admin atau teknisi yang berwenang mencatat
+   serah terima. Catatan berisi waktu, nama petugas, dan detail tiket
+   pengerjaan. Tidak memerlukan tanda terima digital.
+6. Tiket menjadi `COMPLETED`. Sesi customer terkait dicabut.
+
+[DISEPAKATI] Tiket tidak otomatis selesai hanya karena teknisi menyatakan
+pekerjaan selesai. Penutupan menunggu konfirmasi serah terima.
+
+======================================================================
+7. STATUS TIKET DAN TRANSISI
+======================================================================
+
+7.1 Daftar Status Standar
+Kode status                   Label pelanggan
+-----------------------------------------------------------------------
+WAITING_ASSIGNMENT            Menunggu penugasan teknisi
+INSPECTION                    Pemeriksaan awal
+DIAGNOSIS_COMPLETE            Diagnosis selesai
+WAITING_PARTS                 Menunggu suku cadang
+IN_REPAIR                     Dalam pengerjaan
+QUALITY_CHECK                 Pengujian perangkat
+READY_FOR_PICKUP              Siap diambil
+COMPLETED                     Selesai / telah diserahterimakan
+NOT_PROCEEDED                 Tidak dilanjutkan
+CANCELLED                     Dibatalkan
+
+7.2 Aturan Transisi [DISEPAKATI]
+- WAITING_ASSIGNMENT -> INSPECTION (ketika admin menugaskan teknisi atau
+  teknisi mengambil dari antrean).
+- INSPECTION -> DIAGNOSIS_COMPLETE.
+- DIAGNOSIS_COMPLETE -> WAITING_PARTS jika komponen diperlukan.
+- DIAGNOSIS_COMPLETE -> IN_REPAIR jika dapat langsung dikerjakan.
+- DIAGNOSIS_COMPLETE -> NOT_PROCEEDED jika admin/teknisi membatalkan
+  setelah quotation/negosiasi.
+- WAITING_PARTS -> IN_REPAIR ketika komponen tersedia.
+- IN_REPAIR -> QUALITY_CHECK ketika pengerjaan selesai.
+- QUALITY_CHECK -> IN_REPAIR jika QC gagal.
+- QUALITY_CHECK -> READY_FOR_PICKUP jika QC lulus.
+- READY_FOR_PICKUP -> COMPLETED setelah serah terima dicatat oleh admin
+  atau teknisi (nama pengonfirmasi tercatat dalam histori).
+- CANCELLED hanya oleh admin/role berwenang dengan alasan.
+
+Tidak semua transisi perlu dibuka untuk semua role. Backend menjadi sumber
+kebenaran atas transisi status. Frontend hanya menampilkan aksi yang sesuai.
+Setiap perubahan harus membuat histori baru, tidak menimpa histori lama.
+
+7.3 Persentase Progres
+Persentase progres tidak menjadi fitur wajib MVP. Jika kelak ditampilkan,
+perhitungannya harus berdasarkan tahapan/aturan yang disepakati dan tidak
+boleh berupa angka perkiraan tanpa dasar. MVP cukup menampilkan status,
+timeline, dan pembaruan terakhir.
+
+======================================================================
+8. FUNCTIONAL REQUIREMENTS
+======================================================================
+
+FR-001 | Authentication Admin dan Teknisi
+Sistem harus menyediakan login dan logout akun admin/teknisi melalui
+Supabase Auth. Setiap akun memiliki profil dan role yang dikelola secara
+aman. Status akun nonaktif harus ditolak.
+Prioritas: MUST.
+
+FR-002 | Role-Based Authorization
+Setiap request backend harus memverifikasi token, status akun, dan role.
+Role pada frontend tidak boleh menjadi satu-satunya dasar permission.
+Prioritas: MUST.
+
+FR-003 | Customer Management
+Admin dapat membuat, melihat, memperbarui, dan menonaktifkan profil pelanggan.
+Data minimal: nama, nomor telepon, timestamp, dan catatan bila diperlukan.
+Nomor telepon dinormalisasi ke format E.164.
+Prioritas: MUST.
+
+FR-004 | Device Management
+Sistem mendukung jenis perangkat minimal smartphone dan laptop.
+Data minimal: customer, device type, brand, model, warna/serial (opsional),
+dan kondisi awal.
+Satu pelanggan dapat memiliki beberapa perangkat; satu perangkat dapat
+memiliki banyak tiket reparasi sepanjang waktu.
+Prioritas: MUST.
+
+FR-005 | Ticket Creation
+Admin dapat membuat tiket dengan pelanggan, perangkat, keluhan, kondisi
+penerimaan, kelengkapan, dan catatan awal. Nomor tiket dibuat server-side
+dan memiliki unique constraint.
+Prioritas: MUST.
+
+FR-006 | Ticket Assignment
+Admin dapat menugaskan atau mengalihkan tiket kepada teknisi.
+Riwayat penugasan lama harus tetap tercatat.
+Prioritas: MUST.
+
+FR-007 | Technician Assignment Acceptance dan Self-Assignment
+Teknisi wajib menerima penugasan dari admin dan tidak dapat menolak.
+Teknisi dapat mengambil tiket dari antrean tanpa penugasan (self-assignment).
+Setiap penugasan dan self-assignment dicatat dalam histori.
+Prioritas: MUST.
+
+FR-008 | Diagnosis Management
+Teknisi dapat menyimpan diagnosis, rekomendasi tindakan, dan catatan teknis.
+Setiap diagnosis memiliki pembuat dan waktu pembuatan.
+Prioritas: MUST.
+
+FR-009 | Repair Status Management
+Teknisi hanya dapat mengubah status melalui transisi yang diizinkan.
+Admin dapat melakukan koreksi/override dengan alasan dan audit log.
+Prioritas: MUST.
+
+FR-010 | Status History
+Setiap perubahan status menyimpan status lama, status baru, aktor, waktu,
+dan alasan/catatan jika ada. Record histori tidak boleh ditimpa.
+Prioritas: MUST.
+
+FR-011 | Customer Ticket Login
+Pelanggan dapat memasukkan nomor tiket dan nomor WhatsApp yang terdaftar.
+Function memvalidasi keduanya, membuat sesi acak yang terikat pada satu tiket,
+dan mengirim cookie sesi aman. OTP tidak digunakan pada MVP.
+Prioritas: MUST.
+
+FR-012 | Customer Ticket Authorization
+Setiap request customer harus memvalidasi sesi aktif dan mengambil tiket
+dari sesi. Backend tidak boleh mempercayai ticket ID dari browser sebagai
+bukti kepemilikan. Satu sesi hanya berhak mengakses satu tiket.
+Prioritas: MUST.
+
+FR-013 | Customer Monitoring
+Pelanggan dapat melihat data tiket, status, timeline publik, informasi
+diagnosis yang dipublikasikan, estimasi bila diizinkan, dan update publik.
+Prioritas: MUST.
+
+FR-014 | Public and Internal Updates
+Teknisi/admin dapat membuat update dengan visibility `PUBLIC` atau `INTERNAL`.
+Customer API hanya boleh mengembalikan record PUBLIC.
+Prioritas: MUST.
+
+FR-015 | Ticket Attachments
+Teknisi/admin dapat mengunggah foto/dokumen yang dihubungkan ke tiket.
+Attachment memiliki visibility dan metadata. Customer hanya dapat melihat
+attachment yang diizinkan.
+Prioritas: MUST (unggah foto dasar).
+
+FR-016 | Dashboard Admin
+Menampilkan ringkasan tiket berdasarkan status, tiket baru, pekerjaan
+tertunda, tiket siap diambil, dan daftar aktivitas terbaru.
+Prioritas: MUST.
+
+FR-017 | Dashboard Technician
+Menampilkan tiket yang ditugaskan, status penerimaan, pekerjaan aktif,
+dan tugas yang memerlukan tindakan.
+Prioritas: MUST.
+
+FR-018 | Logout and Session Revocation
+Admin/teknisi dapat logout melalui Supabase Auth. Pelanggan dapat logout
+untuk mencabut sesi tiket. Perubahan nomor telepon oleh admin harus mencabut
+sesi customer yang terkait.
+Prioritas: MUST.
+
+FR-019 | Audit Log
+Sistem mencatat tindakan sensitif seperti pembuatan tiket, assignment,
+perubahan status, update data pelanggan, keputusan quotation (jika aktif),
+dan tindakan override.
+Prioritas: MUST.
+
+FR-020 | Search and Filtering
+Admin dapat mencari tiket melalui nomor tiket, nama pelanggan, nomor telepon
+(dengan pembatasan tampilan), perangkat, status, atau teknisi.
+Teknisi hanya mencari dalam tiket yang menjadi kewenangannya.
+Prioritas: SHOULD.
+
+FR-021 | Quotation dan Negosiasi Pelanggan
+[DISEPAKATI] Teknisi/admin wajib membuat estimasi biaya setelah diagnosis
+selesai. Quotation dipublikasikan ke portal pelanggan. Pelanggan dapat
+mengajukan negosiasi dengan alasan melalui portal. Keputusan melanjutkan,
+menyesuaikan, atau membatalkan tetap pada admin/teknisi. Negosiasi tidak
+memblokir workflow.
+Prioritas: MUST.
+
+FR-023 | Customer Quotation Negotiation
+Pelanggan dapat mengajukan negosiasi pada quotation yang dipublikasikan
+melalui portal dengan menyertakan alasan. Negosiasi dicatat dan dapat
+ditinjau oleh admin/teknisi. Negosiasi tidak memblokir proses reparasi.
+Jika estimasi tidak cocok, admin/teknisi dapat membatalkan tiket.
+Prioritas: MUST.
+
+FR-022 | Notification
+MVP menyediakan informasi status di portal dan komunikasi manual oleh
+admin. Notifikasi otomatis WhatsApp/email menjadi tahap lanjutan.
+Prioritas: SHOULD.
+
+======================================================================
+9. NON-FUNCTIONAL REQUIREMENTS
+======================================================================
+
+NFR-001 Security
+- Seluruh komunikasi produksi menggunakan HTTPS.
+- Secret key hanya berada pada environment backend Netlify.
+- Supabase publishable/anon key boleh berada pada frontend; secret/service
+  role key tidak boleh dikirim ke browser atau repository.
+- Semua tabel yang terekspos melalui Supabase Data API harus mengaktifkan
+  Row Level Security (RLS) dengan kebijakan yang sesuai.
+- Jika backend menggunakan service-role/secret key yang bypass RLS, setiap
+  Function wajib melakukan autentikasi dan otorisasi eksplisit. RLS menjadi
+  lapisan pertahanan tambahan, bukan pengganti pemeriksaan backend.
+- Jangan menyediakan akses langsung dari frontend ke tabel privat.
+- Password akun admin/teknisi ditangani Supabase Auth, bukan disimpan sendiri.
+- Nomor telepon tidak boleh dicatat sebagai plaintext di log aplikasi.
+- Cookie sesi pelanggan memakai HttpOnly, Secure, SameSite=Lax atau kebijakan
+  yang telah diuji, serta masa berlaku terbatas.
+- Token sesi pelanggan dibuat dengan cryptographic random generator; simpan
+  hash token di database, bukan token mentah.
+- Terapkan rate limiting pada login customer dan endpoint sensitif.
+- Gunakan pesan kegagalan login generik agar tidak membocorkan keberadaan
+  nomor tiket atau kecocokan nomor telepon.
+- Hindari menampilkan data pelanggan atau catatan internal yang tidak perlu.
+
+NFR-002 Authorization
+- Semua endpoint melakukan pemeriksaan role dan ownership.
+- Teknisi hanya mengakses tiket yang ditugaskan kepadanya.
+- Customer hanya mengakses tiket yang diikat pada sesi valid.
+- Customer tidak boleh menentukan ticket ID lain melalui parameter request
+  untuk mengambil data.
+- Admin/technician permission diperiksa pada backend, bukan hanya route guard
+  atau menu Vue.js.
+
+NFR-003 Performance
+- Daftar tiket menggunakan pagination dan filter server-side.
+- Foto dikompresi sebelum upload; batas ukuran awal yang diusulkan 2-3 MB
+  per gambar, dapat disesuaikan.
+- Customer portal menggunakan polling 30-60 detik pada MVP; interval dapat
+  diubah berdasarkan beban dan kebutuhan pengalaman pengguna.
+- Tidak menampilkan persentase progres yang tidak memiliki dasar.
+
+NFR-004 Availability and Reliability
+- Free tier tidak memberikan jaminan SLA produksi.
+- Sistem harus menampilkan penanganan error ketika Function atau database
+  tidak tersedia.
+- Operasi penting harus idempotent atau memiliki mekanisme mencegah duplikasi.
+- Pembuatan tiket dan histori awal dilakukan dalam transaksi database.
+- Backup dan prosedur restore harus diuji sebelum data operasional nyata
+  digunakan.
+
+NFR-005 Maintainability
+- Menggunakan TypeScript pada frontend dan backend.
+- Modul bisnis dipisahkan berdasarkan domain.
+- Validasi request dilakukan di backend (misalnya Zod).
+- Database menggunakan migration yang tersimpan di repository.
+- API memiliki kontrak dan format error konsisten.
+- Business rules tidak diletakkan hanya pada komponen Vue.js.
+
+NFR-006 Usability and Accessibility
+- Antarmuka mobile-first dan responsif.
+- Portal customer sederhana dan berbahasa Indonesia.
+- Status menggunakan label yang konsisten.
+- Aksi berisiko memerlukan konfirmasi.
+- Form menampilkan validasi yang jelas dan dapat dipahami.
+
+NFR-007 Privacy and Data Governance
+- Kumpulkan data minimum yang dibutuhkan untuk reparasi.
+- Batasi akses nomor telepon, foto, dan informasi perangkat.
+- Tetapkan retensi data dan proses koreksi/penghapusan sesuai kebijakan
+  perusahaan serta peraturan perlindungan data yang berlaku.
+- Evaluasi region penyimpanan Supabase dan potensi transfer data lintas
+  negara sebelum memakai data pelanggan nyata.
+
+======================================================================
+10. ARSITEKTUR TEKNIS DAN DEPLOYMENT
+======================================================================
+
+10.1 Arsitektur yang Dipilih [DISEPAKATI]
+- Frontend: Vue.js 3 + Vite + TypeScript.
+- Hosting frontend: Netlify Free (selama sesuai kuota).
+- Backend: Netlify Functions menggunakan TypeScript.
+- Database: Supabase PostgreSQL Free.
+- File storage: Supabase Storage Free.
+- Auth admin/teknisi: Supabase Auth.
+- Customer ticket access: custom session yang dikelola Netlify Functions.
+- SDK database/auth/storage: Supabase JavaScript SDK.
+- Validation: Zod (usulan).
+- Version control: GitHub.
+- Deployment: Netlify continuous deployment dari repository.
+- Tidak menggunakan Laravel atau VPS pada MVP.
+
+10.2 Gambaran Request
+Browser (Vue.js)
+  -> Netlify Function (REST API)
+  -> Validasi request, session, role, dan business rules
+  -> Supabase PostgreSQL/Storage
+  -> JSON response ke Vue.js.
+
+Pengecualian autentikasi admin/teknisi:
+Supabase Auth SDK pada frontend dapat digunakan untuk sign-in, kemudian
+access token dikirimkan ke Netlify Functions sebagai Bearer token. Function
+memverifikasi token ke Supabase Auth dan memeriksa role pada tabel profil.
+Semua data bisnis privat tetap diakses melalui Function.
+
+Customer authentication:
+Pelanggan mengirim nomor tiket dan nomor WhatsApp ke Netlify Function.
+Function memvalidasi data dan menerbitkan sesi tiket. Cookie berada pada
+origin frontend/Netlify yang sama agar tidak memerlukan cookie lintas-domain.
+
+10.3 Rekomendasi struktur repository
+
+acell-service-repair-monitoring/
+  public/
+  src/
+    assets/
+    components/
+    layouts/
+      AdminLayout.vue
+      TechnicianLayout.vue
+      CustomerLayout.vue
+    views/
+      admin/
+      technician/
+      customer/
+      auth/
+    router/
+    stores/
+    services/
+    composables/
+    types/
+    utils/
+  netlify/
+    functions/
+      auth/
+      customers/
+      devices/
+      tickets/
+      technicians/
+      repairs/
+      customer-access/
+      uploads/
+      reports/
+  shared/
+    types/
+    validators/
+    business/
+    repositories/
+  supabase/
+    migrations/
+    seed.sql
+  tests/
+  netlify.toml
+  vite.config.ts
+  tsconfig.json
+  package.json
+  README.md
+
+Catatan: struktur aktual dapat disesuaikan dengan pola bundling Netlify
+Functions. Kode rahasia dan file environment lokal tidak boleh di-commit.
+
+10.4 Environment Variables
+Frontend (public; hanya nilai yang aman diekspos):
+- VITE_SUPABASE_URL
+- VITE_SUPABASE_PUBLISHABLE_KEY (atau anon key sesuai konfigurasi proyek)
+
+Netlify Functions (server-only secrets):
+- SUPABASE_URL
+- SUPABASE_SECRET_KEY atau SERVICE_ROLE_KEY sesuai tipe key proyek
+- CUSTOMER_SESSION_PEPPER (jika digunakan untuk pepper/hash tambahan)
+- APP_BASE_URL
+- THIRD_PARTY_NOTIFICATION_SECRET (hanya jika integrasi ditambahkan)
+
+Jangan pernah meletakkan Supabase secret/service-role key, password database,
+atau credential provider pihak ketiga pada variabel VITE_*.
+
+10.5 Database SDK dan ORM
+[USULAN] Mulai dengan `@supabase/supabase-js` agar pembelajaran dan integrasi
+lebih sederhana. Gunakan SQL migration yang disimpan di repository.
+Drizzle ORM dapat ditambahkan pada tahap berikutnya jika query/schema semakin
+kompleks. Penggunaan Supabase SDK tidak menghilangkan kebutuhan memahami SQL.
+
+10.6 Storage
+- Gunakan private bucket, bukan public bucket, untuk dokumentasi reparasi.
+- Function memeriksa akses dan membuat signed URL atau signed upload URL.
+- File diberi object path acak dan metadata ticket_id, uploader, visibility.
+- Validasi tipe file, ukuran, dan nama file.
+- Hindari menyimpan data sensitif pada nama file.
+- Foto internal tidak boleh memiliki signed URL yang dapat dibagikan tanpa
+  pembatasan masa berlaku.
+
+10.7 Deployment Environments
+- Local: pengembangan lokal dan data dummy.
+- Preview: pengujian branch/Deploy Preview dengan database atau data uji
+  terpisah dari production.
+- Production: environment penggunaan operasional.
+
+Jangan menghubungkan preview deployment ke database produksi tanpa alasan
+jelas dan kontrol yang disetujui.
+
+10.8 Keterbatasan Free Tier
+- Kuota, batas request, storage, egress, waktu eksekusi, sleeping/pausing,
+  retensi backup, dan kebijakan paket dapat berubah.
+- Tidak ada jaminan SLA untuk free tier.
+- Penggunaan harus dipantau melalui dashboard provider.
+- Jangan menjanjikan biaya Rp0 secara permanen.
+- Periksa region Function dan database serta ketentuan pemrosesan data.
+- Sebelum produksi, buat backup mandiri dan uji proses restore.
+
+======================================================================
+11. KONSEP DATABASE / DATA MODEL AWAL
+======================================================================
+
+Model berikut bersifat konseptual. Nama kolom, tipe, index, constraint, dan
+migration final akan disusun setelah PRD disetujui.
+
+11.1 profiles
+- id (UUID, relasi ke Supabase auth.users)
+- full_name
+- role (ADMIN atau TECHNICIAN pada MVP)
+- phone_e164 (opsional)
+- is_active
+- created_at, updated_at
+
+11.2 customers
+- id (UUID)
+- name
+- phone_e164 (unik sesuai kebijakan duplikasi pelanggan)
+- email (opsional)
+- notes (opsional)
+- created_at, updated_at
+
+11.3 devices
+- id (UUID)
+- customer_id (FK customers)
+- device_type (SMARTPHONE / LAPTOP / OTHER)
+- brand
+- model
+- serial_or_imei (opsional; akses sangat dibatasi)
+- color (opsional)
+- created_at, updated_at
+
+11.4 repair_tickets
+- id (UUID)
+- ticket_number (unik; format contoh AC-YYYY-000001)
+- customer_id (FK customers)
+- device_id (FK devices)
+- created_by (FK profiles)
+- assigned_technician_id (opsional, FK profiles)
+- status
+- customer_complaint
+- intake_condition
+- accessories_received (opsional)
+- estimated_completion_at (opsional)
+- received_at
+- completed_at (opsional)
+- created_at, updated_at
+
+11.5 ticket_assignments
+- id
+- ticket_id
+- technician_id
+- assigned_by (nullable untuk self-assignment)
+- assignment_type (ADMIN_MANUAL / SELF_ASSIGNED / REASSIGNED)
+- assigned_at
+
+11.6 repair_diagnoses
+- id
+- ticket_id
+- technician_id
+- diagnosis
+- recommended_action
+- visibility (PUBLIC / INTERNAL)
+- created_at, updated_at
+
+11.7 repair_quotations
+- id
+- ticket_id
+- version
+- labor_cost
+- parts_cost
+- total_cost
+- status (DRAFT / PUBLISHED / SUPERSEDED)
+- created_by
+- created_at
+
+11.8 quotation_items
+- id
+- quotation_id
+- description
+- quantity
+- unit_price
+- line_total
+
+11.9 quotation_negotiations
+- id
+- quotation_id (FK repair_quotations)
+- ticket_id (FK repair_tickets)
+- customer_session_id (FK customer_ticket_access_sessions)
+- message
+- created_at
+
+11.10 ticket_status_histories
+- id
+- ticket_id
+- old_status
+- new_status
+- changed_by_type (ADMIN / TECHNICIAN / SYSTEM)
+- changed_by_id (nullable untuk SYSTEM)
+- reason_or_note
+- created_at
+
+11.11 ticket_updates
+- id
+- ticket_id
+- author_id
+- message
+- visibility (PUBLIC / INTERNAL)
+- created_at
+
+11.12 ticket_attachments
+- id
+- ticket_id
+- uploader_id
+- storage_bucket
+- object_path
+- original_file_name
+- mime_type
+- file_size
+- visibility (PUBLIC / INTERNAL)
+- created_at
+
+11.13 customer_ticket_access_sessions
+- id
+- ticket_id
+- token_hash (unik)
+- created_at
+- last_seen_at
+- expires_at
+- revoked_at
+- user_agent_summary (opsional; minimalkan data)
+
+Catatan sesi [DISEPAKATI]:
+- Sesi tetap aktif selama tiket belum berstatus COMPLETED.
+- Idle timeout: 4 jam (keamanan).
+- Absolute lifetime: 7 hari (keamanan).
+- Ketika tiket menjadi COMPLETED, semua sesi terkait dicabut.
+- Pelanggan dapat login kembali selama tiket belum selesai.
+
+11.14 audit_logs
+- id
+- actor_type
+- actor_id
+- action
+- entity_type
+- entity_id
+- metadata yang tidak menyimpan secret/PII berlebihan
+- created_at
+
+11.15 auth_attempts / login_rate_limits (opsional implementasi)
+- identifikasi hash ticket/IP atau key pembatasan
+- attempt_count/window_start/blocked_until
+- data IP mentah tidak disimpan kecuali ada kebutuhan dan kebijakan jelas.
+
+11.16 notification_outbox (tahap lanjutan)
+- id
+- ticket_id
+- channel
+- template_key
+- payload minimal
+- status
+- attempts
+- next_attempt_at
+- sent_at
+- created_at
+
+11.17 Prinsip Relasi
+- Satu customer dapat memiliki banyak devices.
+- Satu customer dapat memiliki banyak repair_tickets.
+- Satu device dapat memiliki banyak repair_tickets dari waktu ke waktu.
+- Satu repair_ticket dapat memiliki banyak assignment history.
+- Satu repair_ticket dapat memiliki banyak diagnoses, updates, status histories,
+  quotations, negosiasi, dan attachments.
+- Satu repair_ticket dapat memiliki banyak customer access sessions.
+- Satu customer access session hanya terikat pada satu repair_ticket.
+- Satu quotation dapat memiliki banyak negotiation messages.
+
+11.18 Integritas Data
+- ticket_number harus unique dan dibuat di backend/database, bukan browser.
+- Pembuatan tiket dan status history awal harus satu transaksi.
+- Status tidak boleh diubah dengan menghapus histori lama.
+- Gunakan FK, unique constraints, indexes, dan check constraints sesuai data.
+- Penghapusan permanen tiket tidak tersedia untuk pengguna aplikasi.
+- Gunakan status pembatalan atau soft-delete hanya jika memang diperlukan.
+
+======================================================================
+12. API CONTRACT AWAL
+======================================================================
+
+Semua endpoint bisnis dijalankan sebagai Netlify Functions. Nama berikut
+merupakan rancangan endpoint/logical route; implementasi dapat menggunakan
+satu router Function atau beberapa Function sesuai pola Netlify.
+
+12.1 Auth Admin/Teknisi
+- Supabase Auth sign-in/sign-out melalui Supabase SDK.
+- GET /api/me (Function) untuk mengambil profil dan role terverifikasi.
+
+12.2 Admin
+- GET    /api/admin/dashboard
+- GET    /api/admin/tickets
+- POST   /api/admin/tickets
+- GET    /api/admin/tickets/{ticketId}
+- POST   /api/admin/tickets/{ticketId}/assign
+- POST   /api/admin/tickets/{ticketId}/cancel
+- GET    /api/admin/customers
+- POST   /api/admin/customers
+- PATCH  /api/admin/customers/{customerId}
+- POST   /api/admin/devices
+- GET    /api/admin/technicians
+
+12.3 Technician
+- GET    /api/technician/assignments
+- GET    /api/technician/queue (antrean tiket tanpa penugasan)
+- POST   /api/technician/tickets (membuat tiket baru)
+- POST   /api/technician/tickets/{ticketId}/self-assign
+- POST   /api/technician/tickets/{ticketId}/diagnoses
+- POST   /api/technician/tickets/{ticketId}/quotation
+- POST   /api/technician/tickets/{ticketId}/status
+- POST   /api/technician/tickets/{ticketId}/updates
+- POST   /api/technician/tickets/{ticketId}/attachments/upload-url
+- POST   /api/technician/tickets/{ticketId}/quality-check
+
+12.4 Customer
+- POST   /api/customer/access/login
+- GET    /api/customer/access/session
+- POST   /api/customer/access/logout
+- GET    /api/customer/ticket
+- GET    /api/customer/ticket/timeline
+- GET    /api/customer/ticket/updates
+- GET    /api/customer/ticket/attachments
+- GET    /api/customer/ticket/attachments/{attachmentId}/signed-url
+- GET    /api/customer/ticket/quotation
+- POST   /api/customer/ticket/negotiation
+
+12.5 Aturan API
+- Semua request/response menggunakan JSON kecuali upload langsung ke Storage.
+- Gunakan HTTP status code yang konsisten.
+- Error response tidak boleh membocorkan credential atau informasi sensitif.
+- Endpoint admin/teknisi membutuhkan Bearer token Supabase Auth yang valid.
+- Endpoint customer membutuhkan customer ticket session cookie yang valid.
+- Backend harus menguji role, status akun, assignment, ticket ownership,
+  dan visibility sebelum mengembalikan/mengubah data.
+- Jangan mengirimkan object database mentah tanpa filtering; gunakan response
+  mapper/DTO agar kolom internal tidak terekspos.
+
+======================================================================
+13. CUSTOMER TICKET ACCESS - DETAIL KHUSUS
+======================================================================
+
+13.1 Login
+Input:
+- ticket_number
+- phone_number
+
+Backend:
+1. Validasi format dan normalisasi nomor telepon ke format E.164.
+2. Terapkan rate limit sebelum/selama pencarian.
+3. Cari tiket berdasarkan ticket_number.
+4. Ambil customer_id terkait tiket.
+5. Cocokkan phone_e164 dengan profil customer.
+6. Berikan respons generik jika kombinasi tidak cocok.
+7. Jika cocok, generate token acak dengan cryptographic random generator.
+8. Simpan hash token dalam customer_ticket_access_sessions.
+9. Buat sesi yang terikat pada ticket_id.
+10. Kirim token mentah melalui cookie HttpOnly, Secure, SameSite yang sesuai.
+
+13.2 Sesi
+[DISEPAKATI]
+- Satu cookie sesi pada satu browser profile merujuk ke satu tiket.
+- Login tiket baru pada browser profile yang sama mengganti cookie/sesi aktif.
+- Browser profile/perangkat lain memiliki sesi terpisah.
+- Satu tiket boleh memiliki beberapa sesi dari perangkat berbeda.
+- Sesi tetap aktif selama tiket belum berstatus COMPLETED.
+- Idle timeout: 4 jam (keamanan). Absolute lifetime: 7 hari (keamanan).
+- Ketika tiket menjadi COMPLETED, semua sesi terkait dicabut otomatis.
+- Pelanggan dapat login kembali selama tiket belum selesai.
+- Logout mencabut sesi di database dan menghapus cookie.
+- Perubahan nomor telepon customer oleh admin mencabut sesi terkait.
+
+13.3 Keamanan
+Nomor WhatsApp bukan secret yang kuat. Kombinasi nomor tiket + nomor
+telepon dipilih untuk kemudahan MVP dan tidak boleh dianggap setara dengan
+autentikasi kuat. Karena itu wajib ada rate limit, HTTPS, cookie aman,
+respons generik, session expiration, audit percobaan login, dan pembatasan
+informasi yang ditampilkan. Jangan menggunakan metode ini untuk menampilkan
+informasi finansial atau data sensitif yang tidak diperlukan.
+
+13.4 Customer Monitoring
+- Ambil tiket dari sesi yang sudah tervalidasi, bukan ticket_id dari client.
+- Tampilkan hanya fields yang diizinkan.
+- Tampilkan update/timeline dengan visibility PUBLIC.
+- Tampilkan attachment dengan signed URL berumur pendek.
+- Poll status setiap 30-60 detik sebagai baseline.
+- Jangan tampilkan internal notes, margin, atau nomor pelanggan lengkap.
+
+======================================================================
+14. HALAMAN DAN KOMPONEN UI/UX
+======================================================================
+
+14.1 Halaman Umum
+- Landing/login admin dan teknisi.
+- Customer ticket login.
+- Error/unauthorized/expired session page.
+
+14.2 Admin Dashboard
+- Ringkasan jumlah tiket per status.
+- Daftar tiket baru dan menunggu penugasan.
+- Daftar tiket aktif/tertunda.
+- Tiket siap diambil.
+- Pencarian dan filter.
+- Manajemen pelanggan dan perangkat.
+- Manajemen teknisi/penugasan.
+- Detail tiket dan histori.
+
+14.3 Technician Dashboard
+- Daftar penugasan baru.
+- Tiket yang perlu diterima/ditolak.
+- Pekerjaan aktif.
+- Detail perangkat dan keluhan.
+- Form diagnosis.
+- Form update status.
+- Form catatan publik/internal.
+- Upload dokumentasi.
+- Form QC.
+
+14.4 Customer Portal
+- Login nomor tiket dan nomor WhatsApp.
+- Identitas tiket/perangkat.
+- Status saat ini.
+- Timeline kronologis.
+- Update publik dari teknisi/admin.
+- Diagnosis/estimasi yang dipublikasikan.
+- Foto publik.
+- Informasi siap diambil.
+- Logout / akses tiket lain.
+
+14.5 Prinsip UX
+- Mobile-first.
+- Istilah bahasa Indonesia yang mudah dipahami.
+- Status konsisten di semua dashboard.
+- Formulir tidak meminta data berulang jika sudah ada.
+- Tampilkan waktu update terakhir.
+- Jangan tampilkan persentase progres yang tidak terukur.
+- Bedakan visual informasi publik dan internal.
+
+======================================================================
+15. ACCEPTANCE CRITERIA (KRITERIA PENERIMAAN)
+======================================================================
+
+AC-001: Admin dapat login dengan akun aktif dan role yang benar.
+AC-002: Teknisi dapat login dengan akun aktif dan role yang benar.
+AC-003: Akun nonaktif tidak dapat menggunakan endpoint bisnis.
+AC-004: Admin dapat mendaftarkan pelanggan dan menyimpan nomor E.164.
+AC-005: Admin dapat membuat perangkat smartphone atau laptop.
+AC-006: Admin dapat membuat tiket dengan ticket number unik.
+AC-007: Pembuatan tiket dan status history awal bersifat atomik.
+AC-008: Admin dapat menugaskan tiket kepada teknisi.
+AC-009: Teknisi wajib menerima penugasan dari admin (tidak dapat menolak).
+AC-010: Teknisi dapat mengambil tiket dari antrean tanpa penugasan (self-assignment).
+AC-011: Teknisi tidak dapat membuka tiket yang tidak ditugaskan kepadanya kecuali tiket unassigned di antrean.
+AC-012: Perubahan status mengikuti transisi yang diizinkan.
+AC-013: Setiap perubahan status menghasilkan histori baru.
+AC-014: Pelanggan dengan nomor tiket dan nomor WhatsApp sesuai dapat login.
+AC-015: Kombinasi kredensial yang tidak cocok ditolak dengan pesan generik.
+AC-016: Pelanggan tanpa sesi valid tidak dapat mengakses endpoint monitoring.
+AC-017: Sesi pelanggan hanya dapat mengakses satu tiket.
+AC-018: Pelanggan tidak dapat mengakses ticket ID lain dengan mengubah URL,
+       query, atau request payload.
+AC-019: Login tiket kedua pada browser profile yang sama mengganti sesi aktif.
+AC-020: Login dari browser/perangkat berbeda dapat memiliki sesi terpisah.
+AC-021: Logout mencabut sesi dan cookie.
+AC-022: Sesi expired tidak dapat digunakan.
+AC-023: Customer API hanya menampilkan update dan attachment PUBLIC.
+AC-024: Customer tidak dapat melihat internal notes atau data internal.
+AC-025: Foto disimpan pada private storage dan diakses melalui mekanisme
+       signed URL yang memiliki masa berlaku.
+AC-026: Percobaan login berulang dibatasi oleh rate limiter.
+AC-027: Perubahan nomor telepon pelanggan mencabut sesi akses terkait.
+AC-028: Admin dapat memantau seluruh tiket; teknisi hanya melihat tiket
+       sesuai kewenangan.
+AC-029: Tiket tidak menjadi COMPLETED sebelum serah terima dicatat.
+AC-030: Backup dan proses restore telah diuji sebelum penggunaan data nyata.
+AC-031: Teknisi dapat membuat tiket reparasi baru.
+AC-032: Quotation wajib dibuat setelah diagnosis selesai tanpa persetujuan formal pelanggan.
+AC-033: Pelanggan dapat mengajukan negosiasi pada quotation melalui portal monitoring.
+AC-034: QC dan serah terima dapat dikonfirmasi oleh teknisi maupun admin dengan pencatatan nama pengonfirmasi.
+AC-035: Sesi pelanggan tetap aktif selama tiket belum berstatus COMPLETED.
+AC-036: Ketika tiket berstatus COMPLETED, semua sesi customer terkait dicabut secara otomatis.
+
+======================================================================
+16. TESTING STRATEGY
+======================================================================
+
+16.1 Unit Testing
+- Normalisasi nomor telepon.
+- Pembuatan nomor tiket.
+- Validasi status transition.
+- Validasi role dan assignment.
+- Validasi customer ticket session.
+- Perhitungan quotation (jika fitur dipilih).
+
+16.2 Integration Testing
+- Netlify Functions dengan Supabase PostgreSQL.
+- Supabase Auth token verification.
+- Pembuatan tiket dan histori dalam satu transaksi.
+- Assignment dan penolakan teknisi.
+- Upload dan signed URL storage.
+- Customer login dan logout.
+
+16.3 Authorization/Security Testing
+- Customer A mencoba membuka tiket Customer B.
+- Teknisi A mencoba membuka tiket Teknisi B.
+- User nonaktif memanggil endpoint.
+- Customer mencoba membaca internal note.
+- Request tanpa token/cookie.
+- Token/session kedaluwarsa atau dicabut.
+- Manipulasi ID tiket pada request.
+- Percobaan login berulang.
+- Pemeriksaan secret agar tidak terbundle dalam frontend.
+
+16.4 User Acceptance Testing
+Uji alur dengan skenario nyata menggunakan data dummy:
+- Admin menerima perangkat dan membuat tiket.
+- Admin menugaskan teknisi.
+- Teknisi menerima pekerjaan dan mengisi diagnosis.
+- Teknisi memperbarui status.
+- Pelanggan login dan melihat timeline.
+- Teknisi melakukan QC.
+- Admin mencatat serah terima dan menutup tiket.
+
+======================================================================
+17. RISIKO DAN MITIGASI
+======================================================================
+
+R-01 | Keterbatasan Free Tier
+Risiko: kuota request, database, storage, egress, atau Functions tercapai.
+Mitigasi: monitoring usage, batasi polling, pagination, kompresi foto,
+siapkan opsi upgrade/migrasi, jangan menjanjikan free selamanya.
+
+R-02 | Supabase Free Project Pausing
+Risiko: project tidak aktif dapat dijeda sesuai ketentuan paket.
+Mitigasi: pahami kebijakan pausing, lakukan pemantauan dan prosedur resume;
+jangan mengandalkan free tier sebagai SLA production.
+
+R-03 | Customer Credential Lemah
+Risiko: nomor telepon dapat diketahui pihak lain dan nomor tiket dapat ditebak.
+Mitigasi: rate limit, generic errors, session terbatas, HTTPS, minimasi data,
+monitoring login, dan evaluasi PIN/OTP pada fase berikutnya.
+
+R-04 | Misconfiguration RLS/Secret
+Risiko: akses data tidak sah atau secret bocor.
+Mitigasi: secret hanya pada backend, RLS aktif, test authorization, audit
+repository dan deployment variables.
+
+R-05 | Kehilangan Data
+Risiko: free plan memiliki batas backup/retensi.
+Mitigasi: backup mandiri, pengujian restore, export berkala, dan SOP insiden.
+
+R-06 | File Storage Exposure
+Risiko: foto perangkat dapat diakses publik.
+Mitigasi: private bucket, signed URL singkat, visibility per attachment,
+permission check sebelum membuat signed URL.
+
+R-07 | Perubahan Provider
+Risiko: kuota/harga/API provider berubah.
+Mitigasi: adapter/repository layer, API contracts, SQL migration versioned,
+backup portable, dan dokumentasi deployment.
+
+R-08 | Keputusan Bisnis Belum Final
+Risiko: perubahan workflow saat development.
+Mitigasi: konfirmasi daftar keputusan pada Bagian 18 sebelum PRD final.
+
+======================================================================
+18. ASUMSI DAN KEPUTUSAN YANG TELAH DIKONFIRMASI
+======================================================================
+
+Keputusan Arsitektur dan Akses yang Sudah Disepakati:
+D-01 [DISEPAKATI] Frontend menggunakan Vue.js 3 + Vite.
+D-02 [DISEPAKATI] TypeScript digunakan pada frontend dan backend.
+D-03 [DISEPAKATI] Hosting menggunakan Netlify.
+D-04 [DISEPAKATI] Backend menggunakan Netlify Functions.
+D-05 [DISEPAKATI] Database menggunakan Supabase PostgreSQL Free untuk MVP.
+D-06 [DISEPAKATI] File storage menggunakan Supabase Storage Free (private bucket).
+D-07 [DISEPAKATI] Tidak menggunakan Laravel/VPS pada arsitektur MVP.
+D-08 [DISEPAKATI] Ada tiga aktor bisnis: Admin/Manager, Teknisi, Customer.
+D-09 [DISEPAKATI] Customer login dengan nomor tiket + nomor WhatsApp.
+D-10 [DISEPAKATI] Customer tidak menggunakan OTP pada MVP.
+D-11 [DISEPAKATI] Setiap sesi customer hanya mengakses satu tiket.
+D-12 [DISEPAKATI] Customer tidak mendapat akses ke tiket lain tanpa login ulang.
+D-13 [DISEPAKATI] Customer access bersifat read-only dengan perkecualian fitur ajukan negosiasi.
+D-14 [DISEPAKATI] Produk perlu mendukung smartphone dan dapat diperluas ke laptop.
+
+Asumsi Operasional yang Telah Dikonfirmasi:
+A-01 [DISEPAKATI] Admin menjadi pihak utama yang membuat tiket.
+A-02 [DISEPAKATI] Admin menugaskan teknisi secara manual (di sistem tercatat nama teknisi yang mengerjakan).
+A-03 [DISEPAKATI] Teknisi wajib menerima penugasan dari admin (tidak dapat menolak penugasan).
+A-04 [DISEPAKATI] Admin dan Manager digabung sebagai satu role `admin` pada MVP.
+A-05 [DISEPAKATI] Tiket berstatus selesai hanya setelah tahapan Quality Control (QC) dan serah terima tuntas.
+A-06 [DISEPAKATI] Portal customer menggunakan smart polling: 30 detik saat tab/halaman aktif, 120 detik saat background/hidden, dan berhenti otomatis ketika tiket telah COMPLETED.
+A-07 [DISEPAKATI] Bahasa utama aplikasi adalah Bahasa Indonesia.
+A-08 [DISEPAKATI] Zona waktu tampilan adalah Asia/Jakarta.
+A-09 [DISEPAKATI] Mata uang transaksi dan estimasi adalah Rupiah (IDR).
+A-10 [DISEPAKATI] Integrasi WhatsApp otomatis belum termasuk MVP; admin memberikan tiket & instruksi secara manual.
+
+Keputusan Bisnis yang Telah Dikonfirmasi:
+Q-01 [DISEPAKATI] Teknisi juga diperbolehkan membuat tiket reparasi (misal saat menerima perangkat langsung).
+Q-02 [DISEPAKATI] Teknisi dapat menerima tiket dari admin (wajib diterima) dan boleh mengambil tiket mandiri dari antrean tanpa penugasan (self-assignment).
+Q-03 [DISEPAKATI] Fitur estimasi biaya/quotation wajib ada di MVP, namun tidak membutuhkan persetujuan formal pelanggan. Pelanggan dapat memberikan masukan melalui fitur "ajukan negosiasi".
+Q-04 [DISEPAKATI] Admin diperbolehkan membuat tiket tanpa langsung menugaskan teknisi (masuk antrean unassigned).
+Q-05 [DISEPAKATI] Foto kondisi awal dan PIN/passcode perangkat tidak wajib diisi (opsional), namun tetap dapat diisi jika dirasa perlu.
+Q-06 [DISEPAKATI] Pelanggan tidak dapat menyetujui/menolak quotation secara formal, namun dapat mengajukan negosiasi beserta alasan tambahan. Jika estimasi biaya tidak cocok/tidak disepakati, teknisi atau admin dapat membatalkan tiket (status NOT_PROCEEDED / CANCELLED).
+Q-07 [DISEPAKATI] Selama belum ada konfirmasi selesai (COMPLETED) dari teknisi atau admin, histori dan sesi customer tetap disimpan aktif (dengan batas idle timeout 4 jam dan absolute lifetime 7 hari sebagai pengamanan). Saat tiket COMPLETED, sesi dicabut.
+Q-08 [DISEPAKATI] Konfirmasi QC dan konfirmasi serah terima dapat dilakukan oleh keduanya (teknisi maupun admin), dengan riwayat histori nama petugas yang mengonfirmasi tercatat rapi.
+Q-09 [DISEPAKATI] Serah terima cukup mencatat waktu, nama petugas, dan detail tiket pengerjaan lengkap (tidak memerlukan tanda tangan/tanda terima digital).
+Q-10 [DISEPAKATI] Keduanya (admin dan teknisi) dapat mengirimkan pembaruan publik (public updates) ke portal customer.
+
+======================================================================
+19. ROADMAP PENGEMBANGAN
+======================================================================
+
+PHASE 0 - Product and UX Validation
+- Review dan persetujuan PRD.
+- Review flowchart dan status workflow.
+- Wireframe tiga dashboard.
+- Validasi role dan permission.
+
+PHASE 1 - Foundation
+- Setup GitHub repository.
+- Setup Vue.js 3 + Vite + TypeScript.
+- Setup Netlify project dan Functions.
+- Setup Supabase project, schema, migration, RLS, dan Storage.
+- Setup environment variables dan deployment preview.
+
+PHASE 2 - Core Data and Authentication
+- Admin/technician login.
+- Profile dan role.
+- Customer management.
+- Device management.
+- Customer ticket login/session.
+
+PHASE 3 - Ticketing and Technician Workflow
+- Create ticket.
+- Ticket numbering.
+- Assignment.
+- Accept/reject assignment.
+- Diagnosis.
+- Status transition/history.
+
+PHASE 4 - Customer Monitoring
+- Customer ticket portal.
+- Public timeline.
+- Customer-visible updates.
+- Attachment/photo display.
+- Polling and session expiration.
+
+PHASE 5 - Quality, Release, and Pilot
+- Dashboard finalization.
+- Audit log.
+- Security and authorization tests.
+- Backup and restore test.
+- User acceptance testing with dummy data.
+- Limited pilot after approval.
+
+PHASE 6 - Future Enhancements
+- Quotation approval if not included in MVP.
+- WhatsApp notifications.
+- Inventory and spare parts.
+- Warranty management.
+- Reports and analytics.
+- Multi-branch readiness.
+- Re-evaluate paid infrastructure or Laravel migration when justified.
+
+======================================================================
+20. KRITERIA SIAP PRODUKSI TERBATAS
+======================================================================
+
+Aplikasi tidak boleh langsung digunakan untuk data pelanggan nyata hanya
+karena deployment berhasil. Sebelum pilot operasional, minimal:
+- Semua endpoint diuji untuk role/ownership.
+- RLS diaktifkan dan diperiksa.
+- Secret key tidak ada di frontend bundle atau GitHub.
+- Login pelanggan mempunyai rate limit dan session expiration.
+- Private storage dan signed URL diuji.
+- Backup database tersedia di luar project utama.
+- Restore database pernah diuji.
+- Prosedur insiden dan perubahan nomor pelanggan tersedia.
+- Pengguna internal mendapatkan instruksi penggunaan.
+- Kebijakan retensi dan privasi disepakati.
+- Penggunaan kuota Free dipantau.
+
+======================================================================
+21. GLOSSARY
+======================================================================
+
+Ticket             : Catatan pekerjaan reparasi untuk satu perangkat.
+Customer            : Pelanggan yang menyerahkan perangkat.
+Technician          : Petugas yang melakukan pemeriksaan/reparasi.
+Admin/Manager       : Pengelola operasional sistem.
+Assignment          : Penugasan tiket kepada teknisi.
+Diagnosis           : Hasil pemeriksaan teknis perangkat.
+Quotation           : Estimasi biaya jasa/komponen.
+Timeline            : Urutan histori status dan update.
+Public Update       : Informasi yang dapat dilihat pelanggan.
+Internal Note       : Catatan internal yang tidak ditampilkan ke pelanggan.
+Ticket Session      : Sesi akses customer untuk satu tiket tertentu.
+Serverless Function : Fungsi backend yang dijalankan ketika dipanggil.
+RLS                 : Row Level Security pada PostgreSQL/Supabase.
+MVP                 : Minimum Viable Product.
+
+======================================================================
+22. RIWAYAT REVISI
+======================================================================
+
+Version 0.1 | 31 October 2026
+- Draft pertama berdasarkan hasil brainstorming.
+- Mengadopsi arsitektur Netlify + Supabase Free.
+- Menetapkan Vue.js, TypeScript Functions, PostgreSQL, dan Storage.
+- Memasukkan tiga aktor serta ticket-based customer access.
+- Menandai asumsi dan keputusan bisnis yang belum dikonfirmasi.
+
+Version 1.0 | 31 October 2026
+- Seluruh keputusan bisnis (Q-01 s/d Q-10) dan asumsi operasional (A-01 s/d A-10) dikonfirmasi Product Owner.
+- Quotation ditetapkan wajib di MVP dengan opsi "Ajukan Negosiasi" oleh pelanggan.
+- Dihapusnya status redundan WAITING_TECHNICIAN_ACCEPTANCE dan WAITING_CUSTOMER_APPROVAL.
+- Hak teknisi diperluas: pembuatan tiket mandiri dan self-assignment dari antrean unassigned.
+- Penugasan teknisi oleh admin bersifat wajib (teknisi tidak dapat menolak).
+- Serah terima dan QC dapat dikonfirmasi oleh admin maupun teknisi dengan pencatatan nama aktor.
+- Aturan sesi customer diperjelas: aktif selama tiket belum COMPLETED (idle timeout 4 jam, max 7 hari), dicabut otomatis saat COMPLETED.
+- Pembaruan spesifikasi smart polling dan audit log.
+
+END OF DOCUMENT

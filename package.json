@@ -1,0 +1,13 @@
+{
+  "name": "aris-acell-service-monitoring",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ARIS - Acell Service Repair Monitoring System",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview",
+    "dev:netlify": "netlify dev",
+    "type-check": "cd frontend && vue-tsc --noEmit"
+  }
+}

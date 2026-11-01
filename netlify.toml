@@ -1,0 +1,129 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+  functions = "../netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  autoLaunch = false
+
+# ─── RESTful Route Mappings to Netlify Functions ──────────────────────────────
+
+# Admin Routes
+[[redirects]]
+  from = "/api/admin/tickets"
+  to = "/.netlify/functions/admin-tickets"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/tickets/:id/assign"
+  to = "/.netlify/functions/admin-assign?ticket_id=:id"
+  status = 200
+
+# Technician Routes
+[[redirects]]
+  from = "/api/technician/assignments"
+  to = "/.netlify/functions/technician-assignments"
+  status = 200
+
+[[redirects]]
+  from = "/api/technician/queue"
+  to = "/.netlify/functions/technician-queue"
+  status = 200
+
+[[redirects]]
+  from = "/api/technician/tickets/:id/self-assign"
+  to = "/.netlify/functions/technician-self-assign?ticket_id=:id"
+  status = 200
+
+# Ticket Workflow Routes
+[[redirects]]
+  from = "/api/tickets/:id/diagnoses"
+  to = "/.netlify/functions/ticket-diagnoses?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/quotation"
+  to = "/.netlify/functions/ticket-quotation?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/status"
+  to = "/.netlify/functions/ticket-status?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/updates"
+  to = "/.netlify/functions/ticket-updates?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/attachments"
+  to = "/.netlify/functions/ticket-attachments?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/quality-check"
+  to = "/.netlify/functions/ticket-quality-check?ticket_id=:id"
+  status = 200
+
+[[redirects]]
+  from = "/api/tickets/:id/handover"
+  to = "/.netlify/functions/ticket-handover?ticket_id=:id"
+  status = 200
+
+# Customer Portal Routes
+[[redirects]]
+  from = "/api/customer/access/login"
+  to = "/.netlify/functions/customer-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/access/session"
+  to = "/.netlify/functions/customer-session"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/access/logout"
+  to = "/.netlify/functions/customer-logout"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/ticket"
+  to = "/.netlify/functions/customer-ticket"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/ticket/timeline"
+  to = "/.netlify/functions/customer-timeline"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/ticket/quotation"
+  to = "/.netlify/functions/customer-quotation"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/ticket/negotiation"
+  to = "/.netlify/functions/customer-negotiation"
+  status = 200
+
+[[redirects]]
+  from = "/api/customer/ticket/attachments/:id/signed-url"
+  to = "/.netlify/functions/customer-attachment-url?attachment_id=:id"
+  status = 200
+
+# Fallback API Splat (matches function names directly e.g. /api/me -> /.netlify/functions/me)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Single Page Application (SPA) Fallback for Vue Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
